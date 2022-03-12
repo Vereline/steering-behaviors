@@ -6,10 +6,13 @@ public class ArrivalGameObject : AbstractSteeringGameObject
 {
     [SerializeField]
     protected GameObject objectToFollow;
+    protected float slowRadius = 5.0f;
+    protected float rotationSpeed = 2.0F;
 
     protected override void Start()
     {
         base.Start();
+        //movementControl = MovementControl.Manual;
     }
 
     protected override void Update()
@@ -22,10 +25,37 @@ public class ArrivalGameObject : AbstractSteeringGameObject
         //      If you want to change the rotation of the agent, you can use, for example, "LookDirection" property.
         //      In case you would prefer to modify the transform.position directly, you can change the movementControl to Manual (see AbstractSteeringGameObject class for info).
         //      Feel free to extend the codebase. However, make sure it is easy to find your solution.
+        Arrive();
     }
 
     protected override void LateUpdate()
     {
         base.LateUpdate();
+    }
+
+    protected void Arrive()
+    {
+               
+        Vector3 targetPosition = objectToFollow.transform.position;
+        Vector3 direction = targetPosition - transform.position;
+        
+        float distance = direction.magnitude;
+        float angle = Vector3.Angle(LookDirection, direction);
+
+        float targetSpeed;
+        if (distance > slowRadius)
+        {
+            targetSpeed = maxSpeed;
+        }
+        else //  otherwise calculate a scaled speed
+        {
+            targetSpeed = maxSpeed * Mathf.Clamp01(distance / slowRadius);
+        }
+
+        Vector3 desiredVelocity = (direction.normalized * targetSpeed);
+        Velocity = Vector3.MoveTowards(Velocity, desiredVelocity, distance);
+
+        LookDirection = direction;
+        //LookDirection = Vector3.Slerp(LookDirection, Quaternion.AngleAxis(angle - 90, Vector3.up) * LookDirection, rotationSpeed * Time.fixedDeltaTime);
     }
 }

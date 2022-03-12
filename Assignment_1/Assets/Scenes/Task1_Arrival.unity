@@ -421,6 +421,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6425111299808374915, guid: ace34afe266eec149bb3cba06976a142,
         type: 3}
+      propertyPath: maxSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6425111299808374915, guid: ace34afe266eec149bb3cba06976a142,
+        type: 3}
       propertyPath: objectToFollow
       value: 
       objectReference: {fileID: 1279523087}
