@@ -27,6 +27,16 @@ public class FlockingGameObject : AbstractSteeringGameObject
         //      Set the final velocity to "Velocity" property. The maximum speed of the agent is determined by "maxSpeed".
         //      In case you would prefer to modify the transform.position directly, you can change the movementControl to Manual (see AbstractSteeringGameObject class for info).
         //      Feel free to extend the codebase. However, make sure it is easy to find your solution.
+
+        UpdateFlochingBehavior();
+    }
+
+    protected void UpdateFlochingBehavior()
+    {
+        foreach (FlockingGameObject spawnerAgent in Spawner.Agents)
+        {
+            // TODO
+        }
     }
 
     protected override void LateUpdate()

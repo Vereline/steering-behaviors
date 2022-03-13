@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0.99999905, b: 0.99999905, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3250,9 +3250,34 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2192165474541361516, guid: f4451486bdb7a0643a4aa6b4376c5f9b,
         type: 3}
+      propertyPath: rayAngle
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2192165474541361516, guid: f4451486bdb7a0643a4aa6b4376c5f9b,
+        type: 3}
+      propertyPath: rayLength
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2192165474541361516, guid: f4451486bdb7a0643a4aa6b4376c5f9b,
+        type: 3}
+      propertyPath: avoidDistance
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2192165474541361516, guid: f4451486bdb7a0643a4aa6b4376c5f9b,
+        type: 3}
+      propertyPath: secondaryRayAngle
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2192165474541361516, guid: f4451486bdb7a0643a4aa6b4376c5f9b,
+        type: 3}
       propertyPath: destinationsParent
       value: 
       objectReference: {fileID: 454317919}
+    - target: {fileID: 2192165474541361516, guid: f4451486bdb7a0643a4aa6b4376c5f9b,
+        type: 3}
+      propertyPath: secondaryRayLength
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 5009689355257812018, guid: f4451486bdb7a0643a4aa6b4376c5f9b,
         type: 3}
       propertyPath: m_RootOrder

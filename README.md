@@ -2,6 +2,7 @@
 
 PA217 Artificial Intelligence for Computer Games - hw 1
 
+[Repo link](https://gitlab.fi.muni.cz/xstanko1/pa217-hw1)
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.

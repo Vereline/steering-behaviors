@@ -6,13 +6,13 @@ public class ArrivalGameObject : AbstractSteeringGameObject
 {
     [SerializeField]
     protected GameObject objectToFollow;
+
+    [SerializeField]
     protected float slowRadius = 5.0f;
-    protected float rotationSpeed = 2.0F;
 
     protected override void Start()
     {
         base.Start();
-        //movementControl = MovementControl.Manual;
     }
 
     protected override void Update()
@@ -34,13 +34,11 @@ public class ArrivalGameObject : AbstractSteeringGameObject
     }
 
     protected void Arrive()
-    {
-               
+    {               
         Vector3 targetPosition = objectToFollow.transform.position;
         Vector3 direction = targetPosition - transform.position;
         
         float distance = direction.magnitude;
-        float angle = Vector3.Angle(LookDirection, direction);
 
         float targetSpeed;
         if (distance > slowRadius)
@@ -56,6 +54,5 @@ public class ArrivalGameObject : AbstractSteeringGameObject
         Velocity = Vector3.MoveTowards(Velocity, desiredVelocity, distance);
 
         LookDirection = direction;
-        //LookDirection = Vector3.Slerp(LookDirection, Quaternion.AngleAxis(angle - 90, Vector3.up) * LookDirection, rotationSpeed * Time.fixedDeltaTime);
     }
 }
