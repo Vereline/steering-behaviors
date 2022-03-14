@@ -8,8 +8,10 @@ public class FlockingGameObject : AbstractSteeringGameObject
     protected float neighbourRadius = 8.0f;
 
     protected Vector3 acceleration, location;
-    protected float maxForce = 3.0f;
-
+    protected float alignmentWeight = 0.3f;
+    protected float cohesionWeight = 0.5f;
+    protected float separationWeight = 0.6f;
+    
     public FlockSpawner Spawner { get; set; }
 
     protected override void Start()
@@ -63,7 +65,7 @@ public class FlockingGameObject : AbstractSteeringGameObject
         {
             separationForce.Normalize();
             separationForce *= maxSpeed;
-            separationForce = Vector3.ClampMagnitude(separationForce - Velocity, maxForce);
+            separationForce = Vector3.ClampMagnitude(separationForce - Velocity, 3.0f);
             separationForce *= 5;
             ApplyForce(separationForce);
         }
@@ -91,7 +93,7 @@ public class FlockingGameObject : AbstractSteeringGameObject
             sum.Normalize();
             sum *= maxSpeed;
             Vector3 alignmentForce = sum - Velocity;
-            alignmentForce = Vector3.ClampMagnitude(alignmentForce, maxForce);
+            alignmentForce = Vector3.ClampMagnitude(alignmentForce, 3.0f);
             ApplyForce(alignmentForce);
         }
     }
@@ -178,6 +180,45 @@ public class FlockingGameObject : AbstractSteeringGameObject
         //Separate();
         //Cohesion();
         //ApplySteeringToMotion();
+
+        Vector3 cohesion = Vector3.zero;
+        Vector3 alignment = Vector3.zero;
+        Vector3 separation = Vector3.zero;
+
+        int neighbours = 0;
+
+        foreach (FlockingGameObject spawnerAgent in Spawner.Agents)
+        {
+            if (spawnerAgent != this)
+            {
+                float distance = Vector3.Distance(transform.position, spawnerAgent.transform.position);
+                if (distance > 0 && distance < neighbourRadius)
+                {
+                    neighbours++;
+                    alignment += spawnerAgent.Velocity;
+                    cohesion += spawnerAgent.transform.position;
+                    separation += spawnerAgent.transform.position - transform.position;
+                }
+            }
+        }
+
+        if (neighbours > 0)
+        {
+            alignment /= neighbours;
+            alignment.Normalize();
+
+            cohesion /= neighbours;
+            cohesion -= transform.position;
+            cohesion.Normalize();
+
+            separation /= neighbours;
+            separation *= -1;
+            separation.Normalize();
+        }
+
+        Vector3 desiredVelocity = cohesion * cohesionWeight + alignment * alignmentWeight + separation * separationWeight;
+        Velocity = Vector3.MoveTowards(Velocity, desiredVelocity, Time.deltaTime);
+        LookDirection = Vector3.Lerp(LookDirection, desiredVelocity.normalized, Time.deltaTime);
     }
     protected void ApplySteeringToMotion()
     {
