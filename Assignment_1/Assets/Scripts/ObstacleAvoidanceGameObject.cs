@@ -71,18 +71,7 @@ public class ObstacleAvoidanceGameObject : AbstractSteeringGameObject
         //      In case you would prefer to modify the transform.position directly, you can change the movementControl to Manual (see AbstractSteeringGameObject class for info).
         //      Feel free to extend the codebase. However, make sure it is easy to find your solution.
         
-        //ObstacleAvoidance();
         DetectCollision();
-    }
-
-    protected void ObstacleAvoidance()
-    {
-        //Vector3.Angle, Physics.Raycast
-        //obstacles
-        // desiredDirection
-        // destinationLocations
-        // maxSpeed ...
-        // Velocity = ...
     }
 
     protected void Steer(Vector3 targetPosition)
@@ -96,22 +85,9 @@ public class ObstacleAvoidanceGameObject : AbstractSteeringGameObject
 
         Quaternion targetRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime);
-
-        //LookDirection = Vector3.RotateTowards(LookDirection, direction, Time.deltaTime, 0.0f);
-
-        //LookDirection = Vector3.RotateTowards(LookDirection, direction, Time.deltaTime, 10.0f);
-        //LookDirection = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime) * Vector3.forward;
-        //LookDirection = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime).eulerAngles;
-        //LookDirection = Vector3.Lerp(LookDirection, direction, Time.deltaTime * maxSpeed); 
-        //LookDirection = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime);
         
         // TODO think about smooth rotation - use interpolation/curves????
         LookDirection = Vector3.Lerp(LookDirection, direction, Time.deltaTime * maxSpeed);
-    }
-
-    protected void RotateSmoothlyTowardTarget()
-    {
-        //Vector3 targetPosition
     }
 
     protected Ray CreateRay(Vector3 position, Vector3 destination, float length, Color color)
@@ -135,20 +111,7 @@ public class ObstacleAvoidanceGameObject : AbstractSteeringGameObject
 
     protected void DetectCollision()
     {
-        // send 2 rays, 1 to left corner, 1 to right corner
-
         //// TODO: refactor - put all rays to the loop
-        //Ray leftRay = new Ray(transform.position, Quaternion.AngleAxis(-rayAngle, Vector3.up) * transform.forward);
-        //Ray rightRay = new Ray(transform.position, Quaternion.AngleAxis(rayAngle, Vector3.up) * transform.forward);
-
-        //Ray secondaryLeftRay = new Ray(transform.position, Quaternion.AngleAxis(-secondaryRayAngle, Vector3.up) * transform.forward);
-        //Ray secondaryRightRay = new Ray(transform.position, Quaternion.AngleAxis(secondaryRayAngle, Vector3.up) * transform.forward);
-
-        //Debug.DrawRay(leftRay.origin, leftRay.direction * rayLength, Color.blue);
-        //Debug.DrawRay(rightRay.origin, rightRay.direction * rayLength, Color.green);
-
-        //Debug.DrawRay(secondaryLeftRay.origin, secondaryLeftRay.direction * secondaryRayLength, Color.blue);
-        //Debug.DrawRay(secondaryRightRay.origin, secondaryRightRay.direction * secondaryRayLength, Color.green);
 
         Ray leftRay = CreateRay(transform.position, Quaternion.AngleAxis(-rayAngle, Vector3.up) * transform.forward, rayLength + 0.5f, Color.blue);
         Ray rightRay = CreateRay(transform.position, Quaternion.AngleAxis(rayAngle, Vector3.up) * transform.forward, rayLength, Color.green);
@@ -160,7 +123,6 @@ public class ObstacleAvoidanceGameObject : AbstractSteeringGameObject
         if (Physics.Raycast(leftRay, out hit, rayLength))
         {
             AvoidCollision(leftRay, hit);
-            //Steer();
         }
         else if (Physics.Raycast(rightRay, out hit, rayLength))
         {
@@ -170,7 +132,6 @@ public class ObstacleAvoidanceGameObject : AbstractSteeringGameObject
         else if (Physics.Raycast(secondaryLeftRay, out hit, secondaryRayLength))
         {
             AvoidCollision(secondaryLeftRay, hit);
-
         }
 
         else if (Physics.Raycast(secondaryRightRay, out hit, secondaryRayLength))
@@ -181,36 +142,6 @@ public class ObstacleAvoidanceGameObject : AbstractSteeringGameObject
         {
             Steer(currentDestination);
         }
-        //float rayAngle = 5.0f;
-        //int rays = (int)((int)30 / rayAngle);
-        //rayLength = 1.0f;
-        //avoidDistance = 1.5f;
-        //for (int i = 0; i < rays; i++)
-        //{
-        //    float angle = rayAngle * i;
-        //    Ray ray = new Ray(transform.position, Quaternion.AngleAxis(angle, Vector3.up) * transform.forward);
-        //    Debug.DrawRay(ray.origin, ray.direction * rayLength, Color.blue);
-
-        //    RaycastHit hit;
-
-        //    if (Physics.Raycast(ray, out hit, rayLength))
-        //    {
-        //        Debug.DrawLine(ray.origin, hit.transform.position, Color.red);
-        //        Debug.DrawLine(ray.origin, hit.point, Color.white);
-        //        Debug.DrawLine(hit.point, hit.normal.normalized * avoidDistance, Color.yellow);
-
-        //        Vector3 avoidance = hit.point + hit.normal * avoidDistance;
-
-        //        Steer(avoidance);
-        //        //Steer();
-        //    }
-        //}
-
-        //Steer(currentDestination);
-
-        //Vector3 ahead = Velocity.normalized * maxSeeAhead;
-        //Vector3 ahead2 = ahead * 0.5f;
-
     }
 
     protected override void LateUpdate()
