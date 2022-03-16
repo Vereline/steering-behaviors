@@ -18,11 +18,19 @@ public class ObstacleAvoidanceGameObject : AbstractSteeringGameObject
     [SerializeField]
     protected float destinationTolerance = 1.5f;
 
+    [SerializeField]
     protected float rayLength = 1.2f;
+
+    [SerializeField]
     protected float rayAngle = 4.0f;
+    
+    [SerializeField]
     protected float secondaryRayLength = 0.6f;
+    
+    [SerializeField]
     protected float secondaryRayAngle = 25.0f;
-    public float rotationspeed = 0.1f; // TODO make fields serialized
+    
+    [SerializeField]
     protected float avoidDistance = 2.0f;
 
     [SerializeField]
