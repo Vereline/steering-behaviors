@@ -4,20 +4,24 @@ using UnityEngine;
 
 public class FlockingGameObject : AbstractSteeringGameObject
 {
-    [SerializeField]
+    //[SerializeField]
     protected float neighbourRadius = 8.0f;
 
-    protected Vector3 acceleration, location;
+    //[SerializeField]
+    protected float alignmentWeight = 0.3f;
+
+    //[SerializeField]
+    protected float cohesionWeight = 0.1f;
+
+    //[SerializeField]
+    protected float separationWeight = 20.0f;
 
     [SerializeField]
-    protected float alignmentWeight = 0.5f;
+    protected float driveFactor = 5f;
 
-    [SerializeField]
-    protected float cohesionWeight = 0.3f;
+    float squareMaxSpeed;
+    float squareAvoidanceRadius;
 
-    [SerializeField]
-    protected float separationWeight = 0.5f;
-    
     public FlockSpawner Spawner { get; set; }
 
     protected override void Start()
@@ -25,9 +29,10 @@ public class FlockingGameObject : AbstractSteeringGameObject
         base.Start();
         
         Velocity = new Vector3(Random.insideUnitSphere.x, 0.0f, Random.insideUnitSphere.y).normalized * maxSpeed;
+        
+        movementControl = MovementControl.Manual;
 
-        acceleration = Vector3.zero;
-        location = transform.position;
+        squareMaxSpeed = maxSpeed * maxSpeed;
     }
 
     protected override void Update()
@@ -47,11 +52,14 @@ public class FlockingGameObject : AbstractSteeringGameObject
 
     protected void UpdateFlockingBehavior()
     {
-        Vector3 cohesion = Vector3.zero;
+        List< FlockingGameObject> neighbours = new List<FlockingGameObject>();
+
+        Vector3 move = Vector3.zero;
         Vector3 alignment = Vector3.zero;
+        Vector3 cohesion = Vector3.zero;
         Vector3 separation = Vector3.zero;
 
-        int neighbours = 0;
+        int nAvoid = 0;
 
         foreach (FlockingGameObject spawnerAgent in Spawner.Agents)
         {
@@ -60,42 +68,52 @@ public class FlockingGameObject : AbstractSteeringGameObject
                 float distance = Vector3.Distance(transform.position, spawnerAgent.transform.position);
                 if (distance > 0 && distance < neighbourRadius)
                 {
-                    neighbours++;
-                    alignment += spawnerAgent.Velocity;
-                    cohesion += spawnerAgent.transform.position;
-                    separation += spawnerAgent.transform.position - transform.position;
+                    neighbours.Add(spawnerAgent);
+                    alignment += ComputeAlignment(spawnerAgent);
+
+                    if (Vector3.SqrMagnitude(spawnerAgent.transform.position - transform.position) < squareAvoidanceRadius)
+                    {
+                        nAvoid++;
+                        separation += ComputeSeparation(spawnerAgent);
+                    }
+
+                    cohesion += ComputeCohesion(spawnerAgent);
                 }
             }
         }
 
-        if (neighbours > 0)
+        if (nAvoid > 0)
         {
-            alignment /= neighbours;
-            alignment.Normalize();
-
-            cohesion /= neighbours;
-            cohesion -= transform.position;
-            cohesion.Normalize();
-
-            separation /= neighbours;
-            separation *= -1;
-            separation.Normalize();
+            separation /= nAvoid;
         }
 
-        Vector3 desiredVelocity = cohesion * cohesionWeight + alignment * alignmentWeight + separation * separationWeight;
-        Velocity = Vector3.MoveTowards(Velocity, desiredVelocity, Time.deltaTime);
-        LookDirection = Vector3.Lerp(LookDirection, desiredVelocity.normalized, Time.deltaTime);
+        if (neighbours.Count > 0)
+        {
+            cohesion /= neighbours.Count;
+            cohesion -= transform.position;
+            
+            alignment /= neighbours.Count;
+        } else
+        {
+            alignment = transform.forward;
+        }
+
+        move = cohesion.normalized * cohesionWeight + separation.normalized * separationWeight + alignment.normalized * alignmentWeight;
+
+        move *= driveFactor;
+        if (move.sqrMagnitude > squareMaxSpeed)
+        {
+            move = move.normalized * maxSpeed;
+        }
+        Move(move);
     }
 
-    protected void Seek(Vector3 targetPosition)
+    protected void Move(Vector3 velocity)
     {
-        Vector3 direction = targetPosition - transform.position;
+        //transform.forward = velocity;
+        LookDirection = Vector3.Lerp(LookDirection, velocity.normalized, Time.deltaTime);
 
-        Vector3 desiredVelocity = (direction.normalized * maxSpeed);
-        Velocity = Vector3.Lerp(Velocity, desiredVelocity, Time.deltaTime * maxSpeed * 5);
-
-        // TODO think about smooth rotation - use interpolation/curves????
-        LookDirection = Vector3.Lerp(LookDirection, direction, Time.deltaTime * maxSpeed * 5);
+        transform.position += velocity * Time.deltaTime;
     }
 
     protected override void LateUpdate()
@@ -105,12 +123,12 @@ public class FlockingGameObject : AbstractSteeringGameObject
 
     protected Vector3 ComputeSeparation(FlockingGameObject agent)
     {
-        return agent.transform.position - transform.position;
+        return transform.position - agent.transform.position;
     }
 
     protected Vector3 ComputeAlignment(FlockingGameObject agent)
     {
-        return agent.Velocity;
+        return agent.transform.forward;
     }
 
     protected Vector3 ComputeCohesion(FlockingGameObject agent)
